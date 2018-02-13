@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-bt">
+	<head>
+		<meta charset="utf-8">
+		<title>Busca Cep com axios</title>
+
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	</head>
+	<body>
+
+		<div class="container">
+			<h1>Busca CEP com axios</h1>
+
+			<form id="form-cep" action="#" onsubmit="searchCep()" class="form form-inline">
+				<input type="text" name="cep" id="cep" placeholder="Informe o cep" class="form-control">
+				<button type="submit" class="btn btn-info">Buscar</button>
+			</form>
+
+			<div id="error" style="display: none;" class="alert alert-danger"></div>
+
+			<div id="preloader" style="display: none;" class="alert alert-info">
+				Carregando...
+			</div>
+
+			<div id="results" style="display: none;"></div>
+		</div><!--Container-->
+
+
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<script>
+			function searchCep () {
+				// Inicia o preloader
+				startPreloader ()
+
+				// Recupera o value do input cep
+				let cep = document.getElementById('cep').value
+
+				// Inicia requisição AJAX com o axios
+				axios.get(`http://api.postmon.com.br/v1/cep/${cep}`)
+						.then(response => {
+							showResults (response.data)
+						})
+						.catch(error => {
+							// console.log(error)
+
+							// Mostra a div com o erro
+							document.getElementById('error').style.display = 'block'
+
+							// Mostra a mensagem
+							document.getElementById('error').innerHTML = 'Erro inesperado'
+						})
+						.finally(() => endPreloader ())
+
+				event.preventDefault()
+			}
+
+			function showResults (address) {
+				// Mostra a div com o resultado
+				document.getElementById('results').style.display = 'block'
+
+				// Mostra os resultados:
+				document.getElementById('results').innerHTML = `
+					<p><b>Bairro: </b> ${address.bairro} </p>
+					<p><b>Cidade: </b> ${address.cidade} </p>
+					<p><b>Logradouro: </b> ${address.logradouro} </p>
+					<p><b>Cep: </b> ${address.cep} </p>
+				`
+			}
+
+			function startPreloader () {
+				// Exibe a div de preloader
+				document.getElementById('preloader').style.display = 'block'
+
+				// Limpa os dados do resultado:
+				document.getElementById('results').innerHTML = ''
+
+				// Oculta a div com o resultado
+				document.getElementById('results').style.display = 'none'
+
+				// Oculta a div com o erro
+				document.getElementById('error').style.display = 'none'
+			}
+
+			function endPreloader () {
+				// Oculta a div de preloader
+				document.getElementById('preloader').style.display = 'none'
+			}
+		</script>
+	</body>
+</html>
